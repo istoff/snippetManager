@@ -18,9 +18,10 @@ A lightweight, portable code snippet manager built as a single HTML file. Store,
 - **🚀 Portable**: Single HTML file + JSON backup = complete solution
 
 ### User Experience
+- **🎨 Modern Design**: Glassmorphism design with gradient backgrounds
 - **⌨️ Keyboard Navigation**: Full keyboard control with intuitive shortcuts
 - **📱 Mobile Responsive**: Works seamlessly on desktop, tablet, and mobile
-- **🎨 Font Scaling**: Adjustable font size for better readability
+- **🔍 Font Scaling**: Adjustable font size for better readability
 - **🎯 Visual Selection**: Clear highlighting for selected snippets
 - **🌐 Cross-Platform**: Runs in any modern web browser
 
