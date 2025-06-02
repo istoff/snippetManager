@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Snippet Manager</title>
+    <style>
+        :root {
+            --font-scale: 1.0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            color: #333;
+            overflow: hidden;
+            font-size: calc(14px * var(--font-scale));
+        }
+
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Compact Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .header-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            justify-content: space-between;
+        }
+
+        .title {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+            max-width: 350px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: calc(14px * var(--font-scale));
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e1e8ed;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 20px;
+            font-size: 13px;
+            background: white;
+            min-width: 130px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 200px 1fr 200px;
+            gap: 0;
+            overflow: hidden;
+            height: calc(100vh - 100px);
+        }
+
+        /* Left Sidebar */
+        .left-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            overflow-y: auto;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Content Area */
+        .content-area {
+            background: rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .snippets-grid {
+            display: grid;
+            gap: 15px;
+            max-width: 100%;
+        }
+
+        /* Compact Snippet Cards */
+        .snippet-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .snippet-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .snippet-card.selected {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            background: rgba(255, 255, 255, 0.98);
+            transform: translateY(-1px);
+        }
+
+        .snippet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .snippet-language {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .snippet-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .btn-icon {
+            padding: 6px;
+            border: none;
+            border-radius: 50%;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background: #e9ecef;
+            transform: scale(1.1);
+        }
+
+        .snippet-description {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.3;
+        }
+
+        .snippet-documentation {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            font-style: italic;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .snippet-preview {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #555;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-height: 100px;
+            overflow: hidden;
+            position: relative;
+            line-height: 1.2;
+        }
+
+        .snippet-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 25px;
+            background: linear-gradient(transparent, #f8f9fa);
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .keyboard-shortcuts h3 {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .shortcut-list {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .shortcut-list div {
+            margin-bottom: 6px;
+            padding: 3px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 20px;
+            padding: 25px;
+            border-radius: 18px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #999;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 180px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .toast {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: #28a745;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1100;
+            font-size: 13px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #dc3545;
+        }
+
+        .import-options {
+            background: #f8f9fa;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .import-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .import-option input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 180px 1fr 180px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+            }
+            
+            .left-sidebar, .right-sidebar {
+                padding: 12px;
+                max-height: 180px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-container {
+                min-width: auto;
+                max-width: none;
+            }
+
+            .filter-controls {
+                justify-content: space-around;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Fixed Header -->
+        <div class="header">
+            <div class="header-row">
+                <h1 class="title">📝 Code Snippet Manager</h1>
+                
+                <div class="header-controls">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search snippets..." id="searchInput">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    
+                    <div class="filter-controls">
+                        <select class="filter-select" id="languageFilter">
+                            <option value="">All Languages</option>
+                        </select>
+                        <select class="filter-select" id="sortBy">
+                            <option value="created-desc">Newest First</option>
+                            <option value="created-asc">Oldest First</option>
+                            <option value="description-asc">Description A-Z</option>
+                            <option value="description-desc">Description Z-A</option>
+                            <option value="language-asc">Language A-Z</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openAddModal()" title="Insert Key">
+                        ➕ New
+                    </button>
+                    <button class="btn btn-secondary" onclick="importData()" title="Ctrl+I">
+                        📥 Import
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportData()" title="Ctrl+E">
+                        📤 Export
+                    </button>
+                    <button class="btn btn-secondary" onclick="readClipboard()" title="Ctrl+V">
+                        📋 Paste
+                    </button>
+                    <button class="btn btn-secondary" onclick="autoExport()" title="Auto-save">
+                        💾 Auto
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Left Sidebar - Stats -->
+            <div class="left-sidebar">
+                <div class="stats-section">
+                    <h3>📊 Statistics</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Snippets</span>
+                        <span class="stat-value" id="totalCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Languages</span>
+                        <span class="stat-value" id="languageCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Filtered</span>
+                        <span class="stat-value" id="filteredCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area - Scrollable -->
+            <div class="content-area">
+                <div class="snippets-grid" id="snippetsGrid">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📁</div>
+                        <h3>No snippets found</h3>
+                        <p>Create your first snippet or import an existing collection to get started!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Keyboard Shortcuts -->
+            <div class="right-sidebar">
+                <div class="keyboard-shortcuts">
+                    <h3>⌨️ Shortcuts</h3>
+                    <div class="shortcut-list">
+                        <div><strong>Ctrl+N:</strong> New snippet</div>
+                        <div><strong>Ctrl+S:</strong> Save snippet</div>
+                        <div><strong>Ctrl+V:</strong> Read clipboard</div>
+                        <div><strong>Ctrl+E:</strong> Export data</div>
+                        <div><strong>Ctrl+I:</strong> Import data</div>
+                        <div><strong>Ctrl+F:</strong> Focus search</div>
+                        <div><strong>Delete:</strong> Delete selected</div>
+                        <div><strong>↑/↓:</strong> Navigate snippets</div>
+                        <div><strong>Enter:</strong> Edit selected</div>
+                        <div><strong>Escape:</strong> Close modal</div>
+                        <div><strong>Double-click:</strong> Edit snippet</div>
+                        <hr style="margin: 12px 0; border: none; border-top: 1px solid #eee;">
+                        <div style="margin-top: 12px; font-style: italic; color: #888; font-size: 11px;">
+                            <div><strong>Auto-load:</strong> Place snippets-backup.json in same folder as this HTML file for automatic loading</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="snippetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">✨ Add New Snippet</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="snippetForm">
+                <div class="form-group">
+                    <label class="form-label" for="language">Language</label>
+                    <select class="form-select" id="language" required>
+                        <option value="">Select language...</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                        <option value="cpp">C++</option>
+                        <option value="csharp">C#</option>
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="sql">SQL</option>
+                        <option value="bash">Bash</option>
+                        <option value="powershell">PowerShell</option>
+                        <option value="windowsbatch">Windows Batch</option>
+                        <option value="json">JSON</option>
+                        <option value="xml">XML</option>
+                        <option value="yaml">YAML</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="powerbi-mcode">PowerBI M-Code</option>
+                        <option value="powerbi-dax">PowerBI DAX</option>
+                        <option value="excel">Excel</option>
+                        <option value="kusto">Kusto (KQL)</option>
+                        <option value="pyspark">PySpark</option>
+                        <option value="r">R</option>
+                        <option value="scala">Scala</option>
+                        <option value="go">Go</option>
+                        <option value="rust">Rust</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="php">PHP</option>
+                        <option value="ruby">Ruby</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">Title/Description</label>
+                    <input type="text" class="form-input" id="description" placeholder="Brief description..." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="documentation">Documentation (Optional)</label>
+                    <textarea class="form-textarea" id="documentation" placeholder="Detailed explanation, usage notes, examples..." style="min-height: 80px; font-family: inherit;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="code">Code</label>
+                    <textarea class="form-textarea" id="code" placeholder="Paste your code here..." required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">
+                        ❌ Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        💾 Save Snippet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Import Options Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📥 Import Options</h2>
+                <button class="close-btn" onclick="closeImportModal()">&times;</button>
+            </div>
+            
+            <p>Found <span id="importCount">0</span> snippets to import. How would you like to handle duplicates?</p>
+            
+            <div class="import-options">
+                <label class="import-option">
+                    <input type="radio" name="importMode" value="merge" checked>
+                    <span><strong>Merge:</strong> Keep existing + add new ones (skip duplicates)</span>
+                </label>
+                <label class="import-option">
+                    <input type="radio" name="importMode" value="replace">
+                    <span><strong>Replace:</strong> Replace all current snippets with imported ones</span>
+                </label>
+                <label class="import-option">
+                    <input type="radio" name="importMode" value="append">
+                    <span><strong>Append:</strong> Add all imported snippets (may create duplicates)</span>
+                </label>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-cancel" onclick="closeImportModal()">
+                    ❌ Cancel
+                </button>
+                <button type="button" class="btn btn-primary" onclick="confirmImport()">
+                    📥 Import
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" class="hidden">
+    
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // In-memory data storage
+        let snippets = [];
+        let currentSnippetIndex = -1;
+        let selectedSnippetId = null;
+        let editingSnippetId = null;
+        let pendingImportData = null;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            loadSnippetsFromStorage();
+            populateLanguageFilter();
+            renderSnippets();
+            updateStats();
+        });
+
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            
+            // Filter and sort functionality
+            document.getElementById('languageFilter').addEventListener('change', handleSearch);
+            document.getElementById('sortBy').addEventListener('change', handleSearch);
+            
+            // Form submission
+            document.getElementById('snippetForm').addEventListener('submit', handleFormSubmit);
+            
+            // Import file handler
+            document.getElementById('importFile').addEventListener('change', handleFileImport);
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+            
+            // Modal clicks
+            document.getElementById('snippetModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+
+            document.getElementById('importModal').addEventListener('click', function(e) {
+                if (e.target === this) closeImportModal();
+            });
+        }
+
+        function handleKeyboardShortcuts(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        if (isModalOpen()) {
+                            document.getElementById('snippetForm').dispatchEvent(new Event('submit'));
+                        }
+                        break;
+                    case 'v':
+                        if (!isInputFocused()) {
+                            e.preventDefault();
+                            readClipboard();
+                        }
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        exportData();
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        importData();
+                        break;
+                    case 'f':
+                        e.preventDefault();
+                        document.getElementById('searchInput').focus();
+                        break;
+                }
+            } else if (e.key === 'Insert' && !isInputFocused()) {
+                e.preventDefault();
+                openAddModal();
+            } else if (e.key === 'Escape') {
+                closeModal();
+                closeImportModal();
+            } else if (e.key === 'Delete' && selectedSnippetId && !isInputFocused()) {
+                deleteSnippet(selectedSnippetId).catch(console.error);
+            } else if (e.key === 'Enter' && selectedSnippetId && !isInputFocused()) {
+                editSnippet(selectedSnippetId);
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                if (!isInputFocused()) {
+                    e.preventDefault();
+                    navigateSnippets(e.key === 'ArrowUp' ? -1 : 1);
+                }
+            } else if ((e.key === '+' || e.key === '=') && !isInputFocused()) {
+                e.preventDefault();
+                adjustFontSize(0.1);
+            } else if (e.key === '-' && !isInputFocused()) {
+                e.preventDefault();
+                adjustFontSize(-0.1);
+            } else if (e.key === '0' && !isInputFocused()) {
+                e.preventDefault();
+                resetFontSize();
+            }
+        }
+
+        function adjustFontSize(delta) {
+            const root = document.documentElement;
+            const currentScale = parseFloat(getComputedStyle(root).getPropertyValue('--font-scale')) || 1.0;
+            const newScale = Math.max(0.7, Math.min(2.0, currentScale + delta));
+            root.style.setProperty('--font-scale', newScale.toFixed(1));
+            showToast(`Font size: ${Math.round(newScale * 100)}%`);
+        }
+
+        function resetFontSize() {
+            const root = document.documentElement;
+            root.style.setProperty('--font-scale', '1.0');
+            showToast('Font size reset to 100%');
+        }
+
+        function isInputFocused() {
+            const activeElement = document.activeElement;
+            return activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'SELECT');
+        }
+
+        function isModalOpen() {
+            return document.getElementById('snippetModal').classList.contains('show');
+        }
+
+        function navigateSnippets(direction) {
+            const visibleSnippets = getFilteredAndSortedSnippets();
+            if (visibleSnippets.length === 0) return;
+            
+            currentSnippetIndex = Math.max(0, Math.min(visibleSnippets.length - 1, currentSnippetIndex + direction));
+            selectSnippet(visibleSnippets[currentSnippetIndex].id);
+            
+            // Scroll to selected snippet
+            const selectedCard = document.querySelector(`[data-id="${visibleSnippets[currentSnippetIndex].id}"]`);
+            if (selectedCard) {
+                selectedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function populateLanguageFilter() {
+            const languages = [...new Set(snippets.map(s => s.language))].sort();
+            const select = document.getElementById('languageFilter');
+            
+            // Clear existing options except "All Languages"
+            while (select.children.length > 1) {
+                select.removeChild(select.lastChild);
+            }
+            
+            languages.forEach(lang => {
+                const option = document.createElement('option');
+                option.value = lang;
+                option.textContent = formatLanguageName(lang);
+                select.appendChild(option);
+            });
+        }
+
+        function formatLanguageName(lang) {
+            const formatMap = {
+                'javascript': 'JavaScript',
+                'typescript': 'TypeScript',
+                'powerbi-mcode': 'PowerBI M-Code',
+                'powerbi-dax': 'PowerBI DAX',
+                'windowsbatch': 'Windows Batch',
+                'pyspark': 'PySpark',
+                'csharp': 'C#',
+                'cpp': 'C++',
+                'kusto': 'Kusto (KQL)'
+            };
+            return formatMap[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
+        }
+
+        function updateStats() {
+            const languages = new Set(snippets.map(s => s.language)).size;
+            const filtered = getFilteredAndSortedSnippets().length;
+            
+            document.getElementById('totalCount').textContent = snippets.length;
+            document.getElementById('languageCount').textContent = languages;
+            document.getElementById('filteredCount').textContent = filtered;
+        }
+
+        function getFilteredAndSortedSnippets() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const languageFilter = document.getElementById('languageFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            // Filter snippets
+            let filtered = snippets.filter(snippet => {
+                const matchesSearch = searchTerm === '' || 
+                    snippet.description.toLowerCase().includes(searchTerm) ||
+                    snippet.language.toLowerCase().includes(searchTerm) ||
+                    snippet.code.toLowerCase().includes(searchTerm) ||
+                    (snippet.documentation && snippet.documentation.toLowerCase().includes(searchTerm));
+                
+                const matchesLanguage = languageFilter === '' || snippet.language === languageFilter;
+                
+                return matchesSearch && matchesLanguage;
+            });
+            
+            // Sort snippets
+            filtered.sort((a, b) => {
+                switch (sortBy) {
+                    case 'created-desc':
+                        return new Date(b.created || 0) - new Date(a.created || 0);
+                    case 'created-asc':
+                        return new Date(a.created || 0) - new Date(b.created || 0);
+                    case 'description-asc':
+                        return a.description.localeCompare(b.description);
+                    case 'description-desc':
+                        return b.description.localeCompare(a.description);
+                    case 'language-asc':
+                        return a.language.localeCompare(b.language);
+                    default:
+                        return 0;
+                }
+            });
+            
+            return filtered;
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function loadSnippetsFromStorage() {
+            try {
+                const saved = localStorage.getItem('snippets');
+                if (saved) {
+                    snippets = JSON.parse(saved);
+                    showToast(`Loaded ${snippets.length} snippets from storage`);
+                }
+            } catch (e) {
+                console.error('Failed to load snippets:', e);
+                showToast('Failed to load saved snippets', 'error');
+            }
+        }
+
+        function saveSnippetsToStorage() {
+            try {
+                localStorage.setItem('snippets', JSON.stringify(snippets));
+            } catch (e) {
+                console.error('Failed to save snippets:', e);
+                showToast('Failed to save snippets', 'error');
+            }
+        }
+
+        function openAddModal() {
+            editingSnippetId = null;
+            document.getElementById('modalTitle').textContent = '✨ Add New Snippet';
+            clearForm();
+            document.getElementById('snippetModal').classList.add('show');
+            document.getElementById('description').focus();
+            autoReadClipboard();
+        }
+
+        function editSnippet(id) {
+            const snippet = snippets.find(s => s.id === id);
+            if (!snippet) return;
+
+            editingSnippetId = id;
+            document.getElementById('modalTitle').textContent = '✏️ Edit Snippet';
+            
+            document.getElementById('language').value = snippet.language;
+            document.getElementById('description').value = snippet.description;
+            document.getElementById('documentation').value = snippet.documentation || '';
+            document.getElementById('code').value = snippet.code;
+            
+            document.getElementById('snippetModal').classList.add('show');
+            document.getElementById('description').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('snippetModal').classList.remove('show');
+            clearForm();
+            editingSnippetId = null;
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('show');
+            pendingImportData = null;
+        }
+
+        function clearForm() {
+            document.getElementById('snippetForm').reset();
+        }
+
+        async function readClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (isModalOpen()) {
+                    document.getElementById('code').value = text;
+                }
+                showToast('Clipboard content ready!');
+            } catch (err) {
+                showToast('Could not read clipboard. Please paste manually.', 'error');
+            }
+        }
+
+        async function autoReadClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text.trim() && document.getElementById('code').value.trim() === '') {
+                    document.getElementById('code').value = text;
+                }
+            } catch (err) {
+                // Silently fail - auto-paste is optional
+            }
+        }
+
+        function handleSearch() {
+            renderSnippets();
+            updateStats();
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const language = document.getElementById('language').value;
+            const description = document.getElementById('description').value;
+            const documentation = document.getElementById('documentation').value.trim();
+            const code = document.getElementById('code').value;
+            
+            if (!language || !description || !code) {
+                showToast('Please fill in required fields (Language, Description, Code)', 'error');
+                return;
+            }
+            
+            if (editingSnippetId) {
+                // Update existing snippet
+                const index = snippets.findIndex(s => s.id === editingSnippetId);
+                if (index !== -1) {
+                    snippets[index] = {
+                        ...snippets[index],
+                        language,
+                        description,
+                        documentation: documentation || undefined,
+                        code,
+                        modified: new Date().toISOString()
+                    };
+                    saveSnippetsToStorage();
+                    showToast('Snippet updated successfully!');
+                }
+            } else {
+                // Create new snippet
+                const snippet = {
+                    id: generateId(),
+                    language,
+                    description,
+                    documentation: documentation || undefined,
+                    code,
+                    created: new Date().toISOString()
+                };
+                snippets.unshift(snippet);
+                saveSnippetsToStorage();
+                showToast('Snippet saved successfully!');
+            }
+            
+            populateLanguageFilter();
+            updateStats();
+            renderSnippets();
+            closeModal();
+            await triggerAutoExport();
+        }
+
+        function renderSnippets() {
+            const container = document.getElementById('snippetsGrid');
+            const filteredSnippets = getFilteredAndSortedSnippets();
+            
+            if (filteredSnippets.length === 0) {
+                const searchTerm = document.getElementById('searchInput').value;
+                const languageFilter = document.getElementById('languageFilter').value;
+                const hasFilters = searchTerm || languageFilter;
+                
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <h3>${hasFilters ? 'No matching snippets' : 'No snippets found'}</h3>
+                        <p>${hasFilters ? 'Try adjusting your search or filters' : 'Create your first snippet or import an existing collection to get started!'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Use requestAnimationFrame for better performance with large lists
+            requestAnimationFrame(() => {
+                container.innerHTML = filteredSnippets.map(snippet => `
+                    <div class="snippet-card ${snippet.id === selectedSnippetId ? 'selected' : ''}" 
+                         onclick="selectSnippet('${snippet.id}')" 
+                         ondblclick="editSnippet('${snippet.id}')"
+                         data-id="${snippet.id}">
+                        <div class="snippet-header">
+                            <span class="snippet-language">${formatLanguageName(snippet.language)}</span>
+                            <div class="snippet-actions">
+                                <button class="btn-icon" onclick="event.stopPropagation(); editSnippet('${snippet.id}')" title="Edit snippet">
+                                    ✏️
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); copySnippet('${snippet.id}')" title="Copy to clipboard">
+                                    📋
+                                </button>
+                                <button class="btn-icon" onclick="event.stopPropagation(); deleteSnippet('${snippet.id}').catch(console.error)" title="Delete snippet">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        <div class="snippet-description">${escapeHtml(snippet.description)}</div>
+                        ${snippet.documentation ? `<div class="snippet-documentation">${escapeHtml(snippet.documentation.substring(0, 100))}${snippet.documentation.length > 100 ? '...' : ''}</div>` : ''}
+                        <div class="snippet-preview">${escapeHtml(snippet.code.substring(0, 200))}${snippet.code.length > 200 ? '...' : ''}</div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function selectSnippet(id) {
+            selectedSnippetId = id;
+            updateSelectedSnippet();
+        }
+
+        function updateSelectedSnippet() {
+            document.querySelectorAll('.snippet-card').forEach(card => {
+                card.classList.toggle('selected', card.dataset.id === selectedSnippetId);
+            });
+        }
+
+        async function copySnippet(id) {
+            const snippet = snippets.find(s => s.id === id);
+            if (snippet) {
+                try {
+                    await navigator.clipboard.writeText(snippet.code);
+                    showToast('Code copied to clipboard!');
+                } catch (err) {
+                    showToast('Could not copy to clipboard', 'error');
+                }
+            }
+        }
+
+        async function deleteSnippet(id) {
+            if (confirm('Are you sure you want to delete this snippet?')) {
+                snippets = snippets.filter(s => s.id !== id);
+                saveSnippetsToStorage();
+                if (selectedSnippetId === id) {
+                    selectedSnippetId = null;
+                }
+                populateLanguageFilter();
+                updateStats();
+                renderSnippets();
+                showToast('Snippet deleted');
+                await triggerAutoExport();
+            }
+        }
+
+        async function exportData() {
+            const dataStr = JSON.stringify(snippets, null, 2);
+            
+            // Try to use the modern File System Access API first
+            if ('showSaveFilePicker' in window) {
+                try {
+                    const fileHandle = await window.showSaveFilePicker({
+                        suggestedName: 'snippets-backup.json',
+                        types: [{
+                            description: 'JSON files',
+                            accept: { 'application/json': ['.json'] }
+                        }]
+                    });
+                    
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(dataStr);
+                    await writable.close();
+                    
+                    showToast(`Snippets exported to ${fileHandle.name}`);
+                    return;
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        // User cancelled the dialog
+                        return;
+                    }
+                    console.log('File System Access API failed, falling back to download');
+                }
+            }
+            
+            // Fallback to traditional download method
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'snippets-backup.json';
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showToast('Snippets exported as snippets-backup.json');
+        }
+
+        function autoExport() {
+            if (confirm('Enable auto-export? This will prompt to save snippets-backup.json after each change using your browser\'s save dialog.')) {
+                window.autoExportEnabled = true;
+                showToast('Auto-export enabled! Changes will prompt for save location.');
+            }
+        }
+
+        async function triggerAutoExport() {
+            if (window.autoExportEnabled && snippets.length > 0) {
+                await exportData();
+            }
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleFileImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedSnippets = JSON.parse(e.target.result);
+                    if (Array.isArray(importedSnippets)) {
+                        pendingImportData = importedSnippets;
+                        document.getElementById('importCount').textContent = importedSnippets.length;
+                        document.getElementById('importModal').classList.add('show');
+                    } else {
+                        showToast('Invalid file format', 'error');
+                    }
+                } catch (err) {
+                    showToast('Error reading file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        async function confirmImport() {
+            if (!pendingImportData) return;
+
+            const mode = document.querySelector('input[name="importMode"]:checked').value;
+            
+            // Use requestAnimationFrame for better performance
+            requestAnimationFrame(async () => {
+                switch (mode) {
+                    case 'replace':
+                        snippets = [...pendingImportData];
+                        saveSnippetsToStorage();
+                        showToast(`Replaced all snippets with ${pendingImportData.length} imported snippets!`);
+                        break;
+                    
+                    case 'merge':
+                        const existingIds = new Set(snippets.map(s => s.id));
+                        const newSnippets = pendingImportData.filter(s => !existingIds.has(s.id));
+                        snippets = [...snippets, ...newSnippets];
+                        saveSnippetsToStorage();
+                        showToast(`Merged ${newSnippets.length} new snippets (${pendingImportData.length - newSnippets.length} duplicates skipped)!`);
+                        break;
+                        
+                    case 'append':
+                        snippets = [...snippets, ...pendingImportData];
+                        saveSnippetsToStorage();
+                        showToast(`Added ${pendingImportData.length} snippets!`);
+                        break;
+                }
+                
+                populateLanguageFilter();
+                updateStats();
+                renderSnippets();
+                closeImportModal();
+                await triggerAutoExport();
+            });
+        }
+
+        function getVisibleSnippets() {
+            return getFilteredAndSortedSnippets();
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type === 'error' ? 'error' : ''} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
