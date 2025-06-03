@@ -28,90 +28,116 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            min-width: 320px;
+            width: 100%;
+            overflow: hidden;
         }
 
-        /* Compact Header */
+        /* Compact Single-Row Header */
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 12px 20px;
+            padding: 8px 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             z-index: 100;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            min-height: 50px;
         }
 
         .header-row {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
             justify-content: space-between;
+            flex-wrap: nowrap;
         }
 
         .title {
-            font-size: 1.8em;
+            font-size: calc(1.2em * var(--font-scale));
             font-weight: 700;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin: 0;
             white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 140px;
         }
 
-        .controls {
+        .header-center {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
             align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
             justify-content: center;
+            max-width: 450px;
         }
 
         .search-container {
+            min-width: 90px;
+            max-width: 130px;
             flex: 1;
-            min-width: 200px;
-            max-width: 350px;
             position: relative;
         }
 
         .search-input {
             width: 100%;
-            padding: 10px 40px 10px 15px;
-            border: 2px solid #e1e8ed;
-            border-radius: 25px;
-            font-size: 14px;
+            padding: 4px 20px 4px 6px;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: calc(10px * var(--font-scale));
             transition: all 0.3s ease;
         }
 
         .search-input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
         }
 
         .search-icon {
             position: absolute;
-            right: 12px;
+            right: 5px;
             top: 50%;
             transform: translateY(-50%);
             color: #999;
-            font-size: calc(14px * var(--font-scale));
+            font-size: calc(9px * var(--font-scale));
+        }
+
+        .filter-select {
+            padding: 2px 4px;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: calc(9px * var(--font-scale));
+            background: white;
+            min-width: 55px;
+            max-width: 70px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 3px;
+            flex-shrink: 0;
         }
 
         .btn {
-            padding: 10px 16px;
+            padding: 3px 6px;
             border: none;
-            border-radius: 25px;
-            font-size: 13px;
+            border-radius: 10px;
+            font-size: calc(8px * var(--font-scale));
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 2px;
             white-space: nowrap;
         }
 
@@ -121,39 +147,19 @@
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-secondary {
             background: #f8f9fa;
             color: #333;
-            border: 2px solid #e1e8ed;
+            border: 1px solid #e1e8ed;
         }
 
         .btn-secondary:hover {
             background: #e9ecef;
             transform: translateY(-1px);
-        }
-
-        .filter-controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .filter-select {
-            padding: 8px 12px;
-            border: 2px solid #e1e8ed;
-            border-radius: 20px;
-            font-size: 13px;
-            background: white;
-            min-width: 130px;
-        }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: #667eea;
         }
 
         /* Main Layout */
@@ -163,7 +169,9 @@
             grid-template-columns: 200px 1fr 200px;
             gap: 0;
             overflow: hidden;
-            height: calc(100vh - 100px);
+            height: calc(100vh - 66px);
+            min-width: 0;
+            width: 100%;
         }
 
         /* Left Sidebar */
@@ -176,7 +184,7 @@
         }
 
         .stats-section h3 {
-            font-size: 1.1em;
+            font-size: calc(1.1em * var(--font-scale));
             margin-bottom: 12px;
             color: #333;
         }
@@ -187,7 +195,7 @@
             align-items: center;
             padding: 6px 0;
             border-bottom: 1px solid #eee;
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
         }
 
         .stat-label {
@@ -204,15 +212,18 @@
             background: rgba(255, 255, 255, 0.1);
             overflow-y: auto;
             padding: 15px;
+            min-width: 0;
+            width: 100%;
         }
 
         .snippets-grid {
             display: grid;
             gap: 15px;
             max-width: 100%;
+            width: 100%;
         }
 
-        /* Compact Snippet Cards */
+        /* Enhanced Snippet Cards */
         .snippet-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -226,6 +237,7 @@
             overflow-wrap: break-word;
             max-width: 100%;
             width: 100%;
+            overflow: hidden;
         }
 
         .snippet-card:hover {
@@ -235,9 +247,24 @@
 
         .snippet-card.selected {
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-            background: rgba(255, 255, 255, 0.98);
-            transform: translateY(-1px);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.25), 0 8px 32px rgba(102, 126, 234, 0.2);
+            background: rgba(102, 126, 234, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .snippet-card.selected .snippet-description {
+            color: #1a202c;
+            font-weight: 700;
+        }
+
+        .snippet-card.selected .snippet-documentation {
+            color: #4a5568;
+        }
+
+        .snippet-card.selected .snippet-preview {
+            background: #f7fafc;
+            color: #1a202c;
+            border: 2px solid #cbd5e0;
         }
 
         .snippet-header {
@@ -254,7 +281,7 @@
             color: white;
             padding: 4px 10px;
             border-radius: 15px;
-            font-size: 11px;
+            font-size: calc(11px * var(--font-scale));
             font-weight: 600;
             text-transform: uppercase;
             white-space: nowrap;
@@ -286,23 +313,27 @@
         }
 
         .snippet-description {
-            font-size: 16px;
+            font-size: calc(16px * var(--font-scale));
             font-weight: 600;
             margin-bottom: 8px;
             color: #333;
             word-wrap: break-word;
-            overflow-wrap: break-word;
+            overflow-wrap: anywhere;
+            hyphens: auto;
             line-height: 1.3;
+            max-width: 100%;
         }
 
         .snippet-documentation {
-            font-size: 12px;
+            font-size: calc(12px * var(--font-scale));
             color: #666;
             margin-bottom: 8px;
             font-style: italic;
             line-height: 1.3;
             word-wrap: break-word;
-            overflow-wrap: break-word;
+            overflow-wrap: anywhere;
+            hyphens: auto;
+            max-width: 100%;
         }
 
         .snippet-preview {
@@ -310,15 +341,17 @@
             border-radius: 6px;
             padding: 12px;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
             color: #555;
             white-space: pre-wrap;
             word-wrap: break-word;
-            overflow-wrap: break-word;
+            overflow-wrap: anywhere;
+            hyphens: auto;
             max-height: 100px;
             overflow: hidden;
             position: relative;
             line-height: 1.2;
+            max-width: 100%;
         }
 
         .snippet-preview::after {
@@ -341,13 +374,13 @@
         }
 
         .keyboard-shortcuts h3 {
-            font-size: 1.1em;
+            font-size: calc(1.1em * var(--font-scale));
             margin-bottom: 12px;
             color: #333;
         }
 
         .shortcut-list {
-            font-size: 11px;
+            font-size: calc(11px * var(--font-scale));
             color: #666;
             line-height: 1.5;
         }
@@ -420,7 +453,7 @@
         }
 
         .modal-title {
-            font-size: 1.3em;
+            font-size: calc(1.3em * var(--font-scale));
             font-weight: 700;
             color: #333;
         }
@@ -450,7 +483,7 @@
             margin-bottom: 6px;
             font-weight: 600;
             color: #333;
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
         }
 
         .form-input, .form-textarea, .form-select {
@@ -458,7 +491,7 @@
             padding: 10px;
             border: 2px solid #e1e8ed;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
             transition: all 0.3s ease;
         }
 
@@ -503,7 +536,7 @@
             transform: translateX(400px);
             transition: transform 0.3s ease;
             z-index: 1100;
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
         }
 
         .toast.show {
@@ -527,7 +560,7 @@
             align-items: center;
             margin-bottom: 8px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
         }
 
         .import-option input[type="radio"] {
@@ -538,31 +571,89 @@
             .main-layout {
                 grid-template-columns: 180px 1fr 180px;
             }
+            
+            .title {
+                font-size: calc(1.1em * var(--font-scale));
+                min-width: 120px;
+            }
+            
+            .search-container {
+                min-width: 70px;
+                max-width: 100px;
+            }
+            
+            .filter-select {
+                min-width: 45px;
+                max-width: 55px;
+                font-size: calc(8px * var(--font-scale));
+            }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
+            .header-row {
+                flex-wrap: wrap;
+                gap: 6px;
+                justify-content: center;
+            }
+            
+            .title {
+                order: 1;
+                width: 100%;
+                text-align: center;
+                min-width: auto;
+                margin-bottom: 6px;
+            }
+            
+            .header-center {
+                order: 2;
+                width: auto;
+                max-width: none;
+            }
+            
+            .action-buttons {
+                order: 3;
+                width: auto;
+            }
+            
+            .main-layout {
+                height: calc(100vh - 80px);
+            }
+        }
+
+        @media (max-width: 768px) {
             .main-layout {
                 grid-template-columns: 1fr;
                 grid-template-rows: auto auto 1fr;
+                height: calc(100vh - 95px);
             }
             
             .left-sidebar, .right-sidebar {
                 padding: 12px;
-                max-height: 180px;
+                max-height: 120px;
             }
             
-            .controls {
+            .header-center {
                 flex-direction: column;
-                align-items: stretch;
+                gap: 4px;
+                width: 100%;
             }
-            
+
             .search-container {
                 min-width: auto;
                 max-width: none;
+                width: 100%;
             }
 
-            .filter-controls {
-                justify-content: space-around;
+            .action-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+                gap: 2px;
+            }
+            
+            .btn {
+                padding: 3px 6px;
+                font-size: calc(8px * var(--font-scale));
             }
         }
 
@@ -573,29 +664,27 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Fixed Header -->
+        <!-- Compact Single-Row Header -->
         <div class="header">
             <div class="header-row">
                 <h1 class="title">📝 Code Snippet Manager</h1>
                 
-                <div class="header-controls">
+                <div class="header-center">
                     <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Search snippets..." id="searchInput">
+                        <input type="text" class="search-input" placeholder="Search..." id="searchInput">
                         <span class="search-icon">🔍</span>
                     </div>
                     
-                    <div class="filter-controls">
-                        <select class="filter-select" id="languageFilter">
-                            <option value="">All Languages</option>
-                        </select>
-                        <select class="filter-select" id="sortBy">
-                            <option value="created-desc">Newest First</option>
-                            <option value="created-asc">Oldest First</option>
-                            <option value="description-asc">Description A-Z</option>
-                            <option value="description-desc">Description Z-A</option>
-                            <option value="language-asc">Language A-Z</option>
-                        </select>
-                    </div>
+                    <select class="filter-select" id="languageFilter">
+                        <option value="">All</option>
+                    </select>
+                    <select class="filter-select" id="sortBy">
+                        <option value="created-desc">Newest</option>
+                        <option value="created-asc">Oldest</option>
+                        <option value="description-asc">A-Z</option>
+                        <option value="description-desc">Z-A</option>
+                        <option value="language-asc">Lang</option>
+                    </select>
                 </div>
                 
                 <div class="action-buttons">
@@ -613,6 +702,12 @@
                     </button>
                     <button class="btn btn-secondary" onclick="autoExport()" title="Auto-save">
                         💾 Auto
+                    </button>
+                    <button class="btn btn-secondary" onclick="adjustFontSize(-0.1)" title="Decrease font size">
+                        🔤-
+                    </button>
+                    <button class="btn btn-secondary" onclick="adjustFontSize(0.1)" title="Increase font size">
+                        🔤+
                     </button>
                 </div>
             </div>
@@ -655,20 +750,31 @@
                 <div class="keyboard-shortcuts">
                     <h3>⌨️ Shortcuts</h3>
                     <div class="shortcut-list">
-                        <div><strong>Ctrl+N:</strong> New snippet</div>
-                        <div><strong>Ctrl+S:</strong> Save snippet</div>
-                        <div><strong>Ctrl+V:</strong> Read clipboard</div>
-                        <div><strong>Ctrl+E:</strong> Export data</div>
-                        <div><strong>Ctrl+I:</strong> Import data</div>
-                        <div><strong>Ctrl+F:</strong> Focus search</div>
-                        <div><strong>Delete:</strong> Delete selected</div>
-                        <div><strong>↑/↓:</strong> Navigate snippets</div>
+                        <div style="margin-bottom: 8px; font-weight: 600; color: #333;">📋 Browse:</div>
+                        <div><strong>Insert:</strong> New snippet</div>
+                        <div><strong>↑/↓:</strong> Navigate</div>
                         <div><strong>Enter:</strong> Edit selected</div>
-                        <div><strong>Escape:</strong> Close modal</div>
+                        <div><strong>Delete:</strong> Delete selected</div>
                         <div><strong>Double-click:</strong> Edit snippet</div>
+                        
+                        <div style="margin: 12px 0 8px 0; font-weight: 600; color: #333;">💾 Files:</div>
+                        <div><strong>Ctrl+E:</strong> Export</div>
+                        <div><strong>Ctrl+I:</strong> Import</div>
+                        <div><strong>Ctrl+V:</strong> Read clipboard</div>
+                        <div><strong>Ctrl+F:</strong> Focus search</div>
+                        
+                        <div style="margin: 12px 0 8px 0; font-weight: 600; color: #333;">✏️ Modal:</div>
+                        <div><strong>Ctrl+S:</strong> Save</div>
+                        <div><strong>Escape:</strong> Close</div>
+                        
+                        <div style="margin: 12px 0 8px 0; font-weight: 600; color: #333;">🔍 Display:</div>
+                        <div><strong>+ / -:</strong> Font size</div>
+                        <div><strong>0:</strong> Reset size</div>
+                        
                         <hr style="margin: 12px 0; border: none; border-top: 1px solid #eee;">
-                        <div style="margin-top: 12px; font-style: italic; color: #888; font-size: 11px;">
-                            <div><strong>Auto-load:</strong> Place snippets-backup.json in same folder as this HTML file for automatic loading</div>
+                        <div style="margin-top: 12px; font-style: italic; color: #888; font-size: calc(10px * var(--font-scale));">
+                            <div><strong>💾 Auto-Save:</strong> Snippets automatically save to browser storage</div>
+                            <div><strong>📥 Import:</strong> Load your JSON files to get started</div>
                         </div>
                     </div>
                 </div>
@@ -927,7 +1033,7 @@
             const languages = [...new Set(snippets.map(s => s.language))].sort();
             const select = document.getElementById('languageFilter');
             
-            // Clear existing options except "All Languages"
+            // Clear existing options except "All"
             while (select.children.length > 1) {
                 select.removeChild(select.lastChild);
             }
@@ -1012,7 +1118,9 @@
                 const saved = localStorage.getItem('snippets');
                 if (saved) {
                     snippets = JSON.parse(saved);
-                    showToast(`Loaded ${snippets.length} snippets from storage`);
+                    showToast(`Auto-loaded ${snippets.length} snippets from browser storage`);
+                } else {
+                    showToast('No saved snippets found. Import a collection or create your first snippet!');
                 }
             } catch (e) {
                 console.error('Failed to load snippets:', e);

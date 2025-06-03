@@ -18,10 +18,9 @@ A lightweight, portable code snippet manager built as a single HTML file. Store,
 - **🚀 Portable**: Single HTML file + JSON backup = complete solution
 
 ### User Experience
-- **🎨 Modern Design**: Glassmorphism design with gradient backgrounds
 - **⌨️ Keyboard Navigation**: Full keyboard control with intuitive shortcuts
 - **📱 Mobile Responsive**: Works seamlessly on desktop, tablet, and mobile
-- **🔍 Font Scaling**: Adjustable font size for better readability
+- **🎨 Font Scaling**: Adjustable font size for better readability
 - **🎯 Visual Selection**: Clear highlighting for selected snippets
 - **🌐 Cross-Platform**: Runs in any modern web browser
 
@@ -30,13 +29,14 @@ A lightweight, portable code snippet manager built as a single HTML file. Store,
 ### Installation
 1. Download or save the HTML file to your computer
 2. Double-click to open in your default browser
-3. Start adding snippets or import an existing collection
+3. Your snippets automatically save to browser storage as you work
 
 ### First Use
-1. **Import existing snippets**: Click "Import" to load a `snippets-backup.json` file
-2. **Create new snippet**: Click "New" or press `Insert` key
-3. **Search and filter**: Use the search bar and language filter
-4. **Export for backup**: Click "Export" to save your collection
+1. **Auto-loading**: Previously saved snippets load automatically when you open the app
+2. **Import existing collection**: Click "Import" to load a `snippets-backup.json` file
+3. **Create new snippet**: Click "New" or press `Insert` key
+4. **Search and filter**: Use the search bar and language filter
+5. **Export for backup**: Click "Export" to save your collection to a file
 
 ## 📋 Keyboard Shortcuts
 
@@ -65,8 +65,8 @@ A lightweight, portable code snippet manager built as a single HTML file. Store,
 ### Display Controls
 | Key | Action |
 |-----|--------|
-| `+` | Increase font size |
-| `-` | Decrease font size |
+| `+` or `🔤+` button | Increase font size |
+| `-` or `🔤-` button | Decrease font size |
 | `0` | Reset font size to default |
 
 ### Mouse Actions
@@ -116,17 +116,17 @@ Snippets are stored in JSON format with the following structure:
 ## 🔄 Workflow Examples
 
 ### Daily Development
-1. **Morning**: Open snippet manager, import latest backup
-2. **During work**: Copy useful code snippets, add documentation
-3. **End of day**: Export updated collection to shared location
+1. **Morning**: Open snippet manager (auto-loads your previous work)
+2. **During work**: Add snippets (auto-saves as you type)
+3. **End of day**: Export backup to cloud storage for cross-device sync
 
 ### Cross-Device Sync
 1. **Device A**: Create/modify snippets → Export to cloud storage
-2. **Device B**: Import from cloud storage → Continue working
-3. **Repeat**: Keep collections synchronized across all devices
+2. **Device B**: Import from cloud storage → Continue working (auto-saves locally)
+3. **Repeat**: Keep collections synchronized by periodically exporting/importing
 
 ### Team Sharing
-1. **Individual**: Curate personal snippet collection
+1. **Individual**: Curate personal collection (auto-saves locally)
 2. **Export**: Generate team-specific snippet collections
 3. **Share**: Distribute JSON files via email, Git, or shared drives
 4. **Import**: Team members import and merge with their collections
@@ -155,6 +155,13 @@ Snippets are stored in JSON format with the following structure:
 
 ## 🛠️ Advanced Features
 
+### Auto-Save
+Your snippets automatically save to browser storage as you work:
+- ✅ **Continuous saving**: Every create, edit, or delete action auto-saves
+- ✅ **Auto-loading**: Snippets reload automatically when you reopen the app
+- ✅ **Browser persistence**: Data persists across browser sessions
+- ⚠️ **Single browser**: Storage is specific to each browser/device
+
 ### Auto-Export
 Enable auto-export to automatically save your collection after each change:
 1. Click "Auto" button
@@ -172,6 +179,7 @@ Adjust font size for better readability:
 - Press `+` to increase font size (70% - 200% range)
 - Press `-` to decrease font size
 - Press `0` to reset to default size
+- Use `🔤+` and `🔤-` buttons in the header
 
 ### Search Tips
 - Search works across all text fields (title, code, documentation)
@@ -183,9 +191,20 @@ Adjust font size for better readability:
 
 ### Common Issues
 
-**Snippets not loading on startup**
-- Solution: Use the Import button to load your `snippets-backup.json` file
-- Note: Auto-loading from file system is blocked by browser security
+**Snippets not loading**
+- Solution: Check if you have existing data in browser storage
+- Alternative: Import a `snippets-backup.json` file to get started
+- Note: Each browser stores data separately
+
+**Lost snippets after browser update**
+- Solution: Regular exports provide backup protection
+- Prevention: Export your collection periodically to files
+- Browser storage can be cleared by browser updates or cleanup tools
+
+**Snippets not syncing between devices**
+- Expected: Browser storage is device/browser-specific
+- Solution: Use Export → Import workflow for cross-device sync
+- Alternative: Enable Auto-Export for regular file backups
 
 **Export not working**
 - Modern browsers: Native save dialog should appear
@@ -212,7 +231,7 @@ Adjust font size for better readability:
 For optimal functionality, allow these permissions:
 - **File System Access**: For native save dialogs (Chrome/Edge)
 - **Clipboard Access**: For paste functionality
-- **Local Storage**: For temporary data handling
+- **Local Storage**: Required for automatic snippet saving and persistence
 
 ## 📄 License
 
@@ -237,6 +256,6 @@ For issues or questions:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: December 2024  
+**Version**: 1.0.1  
+**Last Updated**: June 2025  
 **Compatibility**: Modern browsers supporting ES6+
